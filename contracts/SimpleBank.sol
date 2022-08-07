@@ -38,8 +38,6 @@ contract SimpleBank {
     //
 
     constructor() {
-        /* Set the owner to the creator of this contract */
-        // ...
         owner = msg.sender;
     }
 
@@ -59,9 +57,8 @@ contract SimpleBank {
     // Emit the appropriate event
     function enroll() public returns (bool) {
         require(!enrolled[msg.sender], "User already enrolled");
-        // ...
-        //
-        //
+        emit LogEnrolled(msg.sender);
+        enrolled[msg.sender] = true;
     }
 
     /// @notice Deposit ether into bank
