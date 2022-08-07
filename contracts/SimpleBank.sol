@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.4;
+pragma solidity ^0.8.4;
 
 contract SimpleBank {
     //
@@ -50,9 +50,8 @@ contract SimpleBank {
 
     /// @notice Get balance
     /// @return The balance of the user
-    function getBalance()  {
-        /* Get the balance of the sender of this transaction */
-        // return ... ;
+    function getBalance() external isEnrolled returns(uint){
+      return balances[msg.sender];
     }
 
     /// @notice Enroll a customer with the bank
@@ -95,6 +94,10 @@ contract SimpleBank {
         //
         //
         //
+    }
+
+    modifier isEnrolled() {
+      require(enrolled[msg.sender], 'need enrollment');
     }
 
 
