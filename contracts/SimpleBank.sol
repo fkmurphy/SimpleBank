@@ -21,10 +21,10 @@ contract SimpleBank {
     //
 
     /* Add an argument for this event, an accountAddress */
-    event LogEnrolled();
+    event LogEnrolled(address indexed newCustomer);
 
     /* Add 2 arguments for this event, an accountAddress and an amount */
-    event LogDepositMade();
+    event LogDepositMade(address indexed customer, int indexed amount);
 
     /* Create an event that logs Withdrawals
     It should log 3 arguments:
