@@ -6,12 +6,17 @@ contract SimpleBank {
     // State variables
     //
 
+    struct User {
+      uint userId;
+      uint balance;
+      bool enrolled;
+    }
+
     /* We want to protect our users balance from other contracts */
     mapping(address => uint) balances;
 
-    /* We want to create a getter function and allow
-    contracts to be able to see if a user is enrolled.  */
-    mapping(address => bool) enrolled;
+    uint private userEnrolleds;
+
 
     /* Let's make sure everyone knows who owns the bank. */
     address immutable public owner;
