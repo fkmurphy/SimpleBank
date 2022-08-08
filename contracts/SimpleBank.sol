@@ -95,7 +95,7 @@ contract SimpleBank {
       bool result = _withdraw(_withdrawAmount);
       require(result, "Failed withdraw amount");
 
-      return balances[msg.sender];
+      return users[msg.sender].balance;
     }
 
     /// @notice Withdraw remaining ether from bank
@@ -104,10 +104,10 @@ contract SimpleBank {
     function withdrawAll()
       external
       isEnrolled
-      amountIsGreaterZero(balances[msg.sender])
+      amountIsGreaterZero(users[msg.sender].balance)
       returns (bool)
     {
-      bool result = _withdraw(balances[msg.sender]);
+      bool result = _withdraw(users[msg.sender].balance);
       require(result, "Failed withdraw all amount");
       return result;
     }
@@ -119,21 +119,21 @@ contract SimpleBank {
       amountIsGreaterZero(_withdrawAmount)
       returns(bool)
     {
-      uint newBalance = balances[msg.sender] - _withdrawAmount;
+      uint newBalance = users[msg.sender].balance - _withdrawAmount;
       emit LogWithdraw(msg.sender, _withdrawAmount, newBalance);
-      balances[msg.sender] = newBalance;
+      users[msg.sender].balance = newBalance;
       (bool result,) = msg.sender.call{value: _withdrawAmount}("");
       require(result, "Failed withdraw amount");
       return result;
     }
 
     modifier isEnrolled() {
-      require(enrolled[msg.sender], 'need enrollment');
+      require(users[msg.sender].enrolled, 'need enrollment');
       _;
     }
 
     modifier hasAmountForWithdraw(uint _withdrawAmount) {
-      require(balances[msg.sender] >= _withdrawAmount, "Insufficient balance");
+      require(users[msg.sender].balance >= _withdrawAmount, "Insufficient balance");
       _;
     }
     
