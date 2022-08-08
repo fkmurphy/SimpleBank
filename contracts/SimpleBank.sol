@@ -131,8 +131,8 @@ contract SimpleBank {
       _;
     }
     
-    modifier amountIsGreaterZero(uint _withdrawAmount) {
-      require(_withdrawAmount > 0, "Amount must be > 0");
+    modifier amountIsGreaterZero(uint _amount) {
+      require(_amount > 0, "Amount must be > 0");
       _;
     }
 
