@@ -13,9 +13,9 @@ contract SimpleBank {
     }
 
     /* We want to protect our users balance from other contracts */
-    mapping(address => uint) balances;
+    mapping(address => User) users;
 
-    uint private userEnrolleds;
+    uint private countUsersEnrolled;
 
 
     /* Let's make sure everyone knows who owns the bank. */
@@ -30,7 +30,6 @@ contract SimpleBank {
     event LogDepositMade(address indexed customer, uint indexed amount);
 
     event LogWithdraw(address indexed customer, uint indexed amount, uint indexed balance);
-
 
 
     //
@@ -49,16 +48,18 @@ contract SimpleBank {
     /// @notice Get balance
     /// @return The balance of the user
     function getBalance() external view isEnrolled returns(uint){
-      return balances[msg.sender];
+      return users[msg.sender].balance;
     }
 
     /// @notice Enroll a customer with the bank
     /// @return The users enrolled status
     // Emit the appropriate event
     function enroll() public returns (bool) {
-        require(!enrolled[msg.sender], "User already enrolled");
+        require(!users[msg.sender].enrolled, "User already enrolled");
         emit LogEnrolled(msg.sender);
-        enrolled[msg.sender] = true;
+        countUsersEnrolled++;
+        users[msg.sender].enrolled = true;
+        users[msg.sender].userId = countUsersEnrolled;
 
         return true;
     }
@@ -75,9 +76,9 @@ contract SimpleBank {
       returns (uint)
     {
       emit LogDepositMade(msg.sender, msg.value);
-      balances[msg.sender] += msg.value;
+      users[msg.sender].balance += msg.value;
 
-      return balances[msg.sender];
+      return users[msg.sender].balance;
     }
 
     /// @notice Withdraw ether from bank
