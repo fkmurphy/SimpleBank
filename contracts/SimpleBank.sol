@@ -14,7 +14,7 @@ contract SimpleBank {
     mapping(address => bool) enrolled;
 
     /* Let's make sure everyone knows who owns the bank. */
-    address owner;
+    address immutable public owner;
 
     //
     // Events
