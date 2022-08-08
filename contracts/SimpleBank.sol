@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-contract SimpleBank {
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract SimpleBank is ReentrancyGuard {
     //
     // State variables
     //
@@ -88,8 +90,6 @@ contract SimpleBank {
     function withdraw(uint _withdrawAmount)
       external
       isEnrolled
-      amountIsGreaterZero(_withdrawAmount)
-      hasAmountForWithdraw(_withdrawAmount)
       returns (uint)
     {
       bool result = _withdraw(_withdrawAmount);
@@ -104,7 +104,6 @@ contract SimpleBank {
     function withdrawAll()
       external
       isEnrolled
-      amountIsGreaterZero(users[msg.sender].balance)
       returns (bool)
     {
       bool result = _withdraw(users[msg.sender].balance);
@@ -114,9 +113,10 @@ contract SimpleBank {
 
     function _withdraw(uint _withdrawAmount)
       private
+      nonReentrant
       isEnrolled
-      hasAmountForWithdraw(_withdrawAmount)
       amountIsGreaterZero(_withdrawAmount)
+      hasAmountForWithdraw(_withdrawAmount)
       returns(bool)
     {
       uint newBalance = users[msg.sender].balance - _withdrawAmount;
