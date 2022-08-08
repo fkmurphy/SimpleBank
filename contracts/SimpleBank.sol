@@ -76,12 +76,8 @@ contract SimpleBank {
     /// @param withdrawAmount amount you want to withdraw
     /// @return The balance remaining for the user
     // Emit the appropriate event
-    function withdraw(uint withdrawAmount) returns (uint) {
-        // require(, "User not enrolled");
-        // ...
-        //
-        //
-        //
+    function withdraw(uint withdrawAmount)  isEnrolled external returns (uint) {
+      require(balances[msg.sender] >= withdrawAmount, "Insufficient balance");
     }
 
     /// @notice Withdraw remaining ether from bank
