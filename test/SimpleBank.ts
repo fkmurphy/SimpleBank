@@ -127,5 +127,17 @@ describe("SimpleBank", function () {
         .to.revertedWith("Insufficient balance")
 
     });
+
+    it("Should withdraw 50001 but not has balance", async function () {
+      const { simpleBank, testAccountOne} = await loadFixture(deployOneYearLockFixture);
+      await simpleBank.connect(testAccountOne).enroll()
+      const amountToDeposit = 50000
+      await simpleBank.connect(testAccountOne).deposit({from: testAccountOne.address, value: amountToDeposit})
+
+      await expect(simpleBank.connect(testAccountOne).withdraw(50001))
+        .to.revertedWith("Insufficient balance")
+
+      expect(await simpleBank.connect(testAccountOne).getBalance()).to.equal(50000)
+    });
   })
 });
