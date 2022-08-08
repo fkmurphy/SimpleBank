@@ -65,17 +65,14 @@ contract SimpleBank {
     /// @return The balance of the user after the deposit is made
     // This function can receive ether
     // Users should be enrolled before they can make deposits
-    function deposit() public returns (uint) {
-        // ...
-        //
-        //
+    function deposit() public isEnrolled returns (uint) {
     }
 
     /// @notice Withdraw ether from bank
     /// @param withdrawAmount amount you want to withdraw
     /// @return The balance remaining for the user
     // Emit the appropriate event
-    function withdraw(uint withdrawAmount)  isEnrolled external returns (uint) {
+    function withdraw(uint withdrawAmount) external isEnrolled returns (uint) {
       require(balances[msg.sender] >= withdrawAmount, "Insufficient balance");
       require(withdrawAmount > 0, "Amount to Widthdraw > 0");
       //TODO emit event
