@@ -8,12 +8,17 @@ contract SimpleBank is ReentrancyGuard {
     // State variables
     //
 
-    /* We want to protect our users balance from other contracts */
-    mapping(address => uint) balances;
+    struct User {
+      uint userId;
+      uint balance;
+      bool enrolled;
+    }
 
-    /* We want to create a getter function and allow
-    contracts to be able to see if a user is enrolled.  */
-    mapping(address => bool) enrolled;
+    /* We want to protect our users balance from other contracts */
+    mapping(address => User) users;
+
+    uint private countUsersEnrolled;
+
 
     /* Let's make sure everyone knows who owns the bank. */
     address immutable public owner;
@@ -27,7 +32,6 @@ contract SimpleBank is ReentrancyGuard {
     event LogDepositMade(address indexed customer, uint indexed amount);
 
     event LogWithdraw(address indexed customer, uint indexed amount, uint indexed balance);
-
 
 
     //
@@ -46,16 +50,18 @@ contract SimpleBank is ReentrancyGuard {
     /// @notice Get balance
     /// @return The balance of the user
     function getBalance() external view isEnrolled returns(uint){
-      return balances[msg.sender];
+      return users[msg.sender].balance;
     }
 
     /// @notice Enroll a customer with the bank
     /// @return The users enrolled status
     // Emit the appropriate event
     function enroll() public returns (bool) {
-        require(!enrolled[msg.sender], "User already enrolled");
+        require(!users[msg.sender].enrolled, "User already enrolled");
         emit LogEnrolled(msg.sender);
-        enrolled[msg.sender] = true;
+        countUsersEnrolled++;
+        users[msg.sender].enrolled = true;
+        users[msg.sender].userId = countUsersEnrolled;
 
         return true;
     }
@@ -72,9 +78,9 @@ contract SimpleBank is ReentrancyGuard {
       returns (uint)
     {
       emit LogDepositMade(msg.sender, msg.value);
-      balances[msg.sender] += msg.value;
+      users[msg.sender].balance += msg.value;
 
-      return balances[msg.sender];
+      return users[msg.sender].balance;
     }
 
     /// @notice Withdraw ether from bank
@@ -89,7 +95,7 @@ contract SimpleBank is ReentrancyGuard {
       bool result = _withdraw(_withdrawAmount);
       require(result, "Failed withdraw amount");
 
-      return balances[msg.sender];
+      return users[msg.sender].balance;
     }
 
     /// @notice Withdraw remaining ether from bank
@@ -100,7 +106,7 @@ contract SimpleBank is ReentrancyGuard {
       isEnrolled
       returns (bool)
     {
-      bool result = _withdraw(balances[msg.sender]);
+      bool result = _withdraw(users[msg.sender].balance);
       require(result, "Failed withdraw all amount");
       return result;
     }
@@ -113,21 +119,21 @@ contract SimpleBank is ReentrancyGuard {
       hasAmountForWithdraw(_withdrawAmount)
       returns(bool)
     {
-      uint newBalance = balances[msg.sender] - _withdrawAmount;
+      uint newBalance = users[msg.sender].balance - _withdrawAmount;
       emit LogWithdraw(msg.sender, _withdrawAmount, newBalance);
-      balances[msg.sender] = newBalance;
+      users[msg.sender].balance = newBalance;
       (bool result,) = msg.sender.call{value: _withdrawAmount}("");
       require(result, "Failed withdraw amount");
       return result;
     }
 
     modifier isEnrolled() {
-      require(enrolled[msg.sender], 'need enrollment');
+      require(users[msg.sender].enrolled, 'need enrollment');
       _;
     }
 
     modifier hasAmountForWithdraw(uint _withdrawAmount) {
-      require(balances[msg.sender] >= _withdrawAmount, "Insufficient balance");
+      require(users[msg.sender].balance >= _withdrawAmount, "Insufficient balance");
       _;
     }
     
