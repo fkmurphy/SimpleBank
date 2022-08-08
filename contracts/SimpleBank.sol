@@ -75,29 +75,55 @@ contract SimpleBank {
     /// @param withdrawAmount amount you want to withdraw
     /// @return The balance remaining for the user
     // Emit the appropriate event
-    function withdraw(uint withdrawAmount) external isEnrolled returns (uint) {
-      require(balances[msg.sender] >= withdrawAmount, "Insufficient balance");
-      require(withdrawAmount > 0, "Amount to Widthdraw > 0");
+    function withdraw(uint _withdrawAmount)
+      external
+      isEnrolled
+      hasAmountForWidthdraw(_withdrawAmount)
+      returns (uint)
+    {
       //TODO emit event
-      balances[msg.sender] -= withdrawAmount;
-      (bool result,) = msg.sender.call{value: withdrawAmount}("");
+      bool result = _widthdraw(_withdrawAmount)
       require(result, "Failed withdraw amount");
+
+      return balances[msg.sender];
     }
 
     /// @notice Withdraw remaining ether from bank
     /// @return bool transaction success
     // Emit the appropriate event
-    function withdrawAll() returns (bool) {
-        // ...
-        //
-        //
-        //
+    function withdrawAll()
+      external
+      isEnrolled
+      returns (bool)
+    {
+      //emit event
+      bool result = _withdraw(balances[msg.sender]);
+      require(result, "Failed withdraw all amount");
+      return result;
+    }
+
+    function _widthdraw(uint _widthdrawAmount)
+      private
+      isEnrolled
+      hasAmountForWidthdraw(_widthdrawAmount)
+      returns(bool)
+    {
+      balances[msg.sender] -= _withdrawAmount;
+      (bool result,) = msg.sender.call{value: _withdrawAmount}("");
+      require(result, "Failed withdraw amount");
+      return result;
+
     }
 
     modifier isEnrolled() {
       require(enrolled[msg.sender], 'need enrollment');
+      _;
     }
 
-
+    modifier hasAmountForWidthdraw(uint _widthdrawAmount) {
+      require(_withdrawAmount > 0, "Amount must be > 0");
+      require(balances[msg.sender] >= _withdrawAmount, "Insufficient balance");
+      _;
+    }
 
 }
