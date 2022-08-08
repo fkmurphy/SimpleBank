@@ -77,6 +77,7 @@ contract SimpleBank {
     // Emit the appropriate event
     function withdraw(uint withdrawAmount)  isEnrolled external returns (uint) {
       require(balances[msg.sender] >= withdrawAmount, "Insufficient balance");
+      require(withdrawAmount > 0, "Amount to Widthdraw > 0");
       //TODO emit event
       balances[msg.sender] -= withdrawAmount;
       (bool result,) = msg.sender.call{value: withdrawAmount}("");
