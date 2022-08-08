@@ -66,6 +66,9 @@ contract SimpleBank {
     // This function can receive ether
     // Users should be enrolled before they can make deposits
     function deposit() public isEnrolled returns (uint) {
+      require(msg.value > 0, "Amount to deposit must be > 0");
+      // TODO emit event
+      balances[msg.sender] += msg.value;
     }
 
     /// @notice Withdraw ether from bank
