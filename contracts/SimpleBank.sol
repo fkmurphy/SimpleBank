@@ -62,12 +62,12 @@ contract SimpleBank {
     // Users should be enrolled before they can make deposits
     function deposit() public isEnrolled returns (uint) {
       require(msg.value > 0, "Amount to deposit must be > 0");
-      LogDepositMade(msg.sender, msg.value);
+      emit LogDepositMade(msg.sender, msg.value);
       balances[msg.sender] += msg.value;
     }
 
     /// @notice Withdraw ether from bank
-    /// @param withdrawAmount amount you want to withdraw
+    /// @param _withdrawAmount amount you want to withdraw
     /// @return The balance remaining for the user
     // Emit the appropriate event
     function withdraw(uint _withdrawAmount)
