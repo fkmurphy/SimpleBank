@@ -33,7 +33,7 @@ describe("SimpleBank", function () {
 
     it("Should emit enrolled event and get balance 0", async function () {
 
-      const { simpleBank, owner, testAccountOne} = await loadFixture(deployOneYearLockFixture);
+      const { simpleBank, testAccountOne} = await loadFixture(deployOneYearLockFixture);
       const enrollment = await simpleBank.connect(testAccountOne).enroll()
 
       expect(enrollment).to.emit(simpleBank, "LogEnrolled")
