@@ -24,7 +24,7 @@ contract SimpleBank {
 
     event LogDepositMade(address indexed customer, uint indexed amount);
 
-    event LogWidthdraw(address indexed customer, uint indexed amount, uint indexed balance);
+    event LogWithdraw(address indexed customer, uint indexed amount, uint indexed balance);
 
 
 
@@ -77,7 +77,7 @@ contract SimpleBank {
     function withdraw(uint _withdrawAmount)
       external
       isEnrolled
-      hasAmountForWidthdraw(_withdrawAmount)
+      hasAmountForWithdraw(_withdrawAmount)
       returns (uint)
     {
       bool result = _withdraw(_withdrawAmount);
@@ -102,11 +102,11 @@ contract SimpleBank {
     function _withdraw(uint _withdrawAmount)
       private
       isEnrolled
-      hasAmountForWidthdraw(_withdrawAmount)
+      hasAmountForWithdraw(_withdrawAmount)
       returns(bool)
     {
       uint newBalance = balances[msg.sender] - _withdrawAmount;
-      emit LogWidthdraw(msg.sender, _withdrawAmount, newBalance);
+      emit LogWithdraw(msg.sender, _withdrawAmount, newBalance);
       balances[msg.sender] = newBalance;
       (bool result,) = msg.sender.call{value: _withdrawAmount}("");
       require(result, "Failed withdraw amount");
@@ -118,7 +118,7 @@ contract SimpleBank {
       _;
     }
 
-    modifier hasAmountForWidthdraw(uint _withdrawAmount) {
+    modifier hasAmountForWithdraw(uint _withdrawAmount) {
       require(_withdrawAmount > 0, "Amount must be > 0");
       require(balances[msg.sender] >= _withdrawAmount, "Insufficient balance");
       _;
