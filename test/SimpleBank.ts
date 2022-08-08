@@ -48,6 +48,7 @@ describe("SimpleBank", function () {
       const enrollment = await simpleBank.connect(testAccountOne).enroll()
 
       expect(enrollment).to.emit(simpleBank, "LogEnrolled")
+        .withArgs(testAccountOne.address)
 
       expect(await simpleBank.connect(testAccountOne).getBalance()).to.equal(0)
 
