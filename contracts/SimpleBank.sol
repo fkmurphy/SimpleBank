@@ -77,6 +77,10 @@ contract SimpleBank {
     // Emit the appropriate event
     function withdraw(uint withdrawAmount)  isEnrolled external returns (uint) {
       require(balances[msg.sender] >= withdrawAmount, "Insufficient balance");
+      //TODO emit event
+      balances[msg.sender] -= withdrawAmount;
+      (bool result,) = msg.sender.call{value: withdrawAmount}("");
+      require(result, "Failed withdraw amount");
     }
 
     /// @notice Withdraw remaining ether from bank
