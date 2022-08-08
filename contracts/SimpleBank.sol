@@ -62,7 +62,7 @@ contract SimpleBank {
     // Users should be enrolled before they can make deposits
     function deposit() public isEnrolled returns (uint) {
       require(msg.value > 0, "Amount to deposit must be > 0");
-      // TODO emit event
+      LogDepositMade(msg.sender, msg.value);
       balances[msg.sender] += msg.value;
     }
 
