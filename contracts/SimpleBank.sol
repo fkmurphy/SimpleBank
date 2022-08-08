@@ -54,6 +54,8 @@ contract SimpleBank {
         require(!enrolled[msg.sender], "User already enrolled");
         emit LogEnrolled(msg.sender);
         enrolled[msg.sender] = true;
+
+        return true;
     }
 
     /// @notice Deposit ether into bank
@@ -64,6 +66,8 @@ contract SimpleBank {
       require(msg.value > 0, "Amount to deposit must be > 0");
       emit LogDepositMade(msg.sender, msg.value);
       balances[msg.sender] += msg.value;
+
+      return balances[msg.sender];
     }
 
     /// @notice Withdraw ether from bank
