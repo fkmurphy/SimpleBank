@@ -30,6 +30,7 @@ contract SimpleBank {
     It should log 3 arguments:
     the account address, the amount withdrawn, and the new balance. */
     // event
+    event LogWidthdraw(address indexed customer, uint indexed amount, uint indexed balance);
 
 
 
@@ -81,7 +82,6 @@ contract SimpleBank {
       hasAmountForWidthdraw(_withdrawAmount)
       returns (uint)
     {
-      //TODO emit event
       bool result = _widthdraw(_withdrawAmount)
       require(result, "Failed withdraw amount");
 
@@ -96,7 +96,6 @@ contract SimpleBank {
       isEnrolled
       returns (bool)
     {
-      //emit event
       bool result = _withdraw(balances[msg.sender]);
       require(result, "Failed withdraw all amount");
       return result;
@@ -108,11 +107,12 @@ contract SimpleBank {
       hasAmountForWidthdraw(_widthdrawAmount)
       returns(bool)
     {
-      balances[msg.sender] -= _withdrawAmount;
+      uint newBalance = balances[msg.sender] - _widthdrawAmount;
+      emit LogWidthdraw(msg.sender, _widthdrawAmount, newBalance);
+      balances[msg.sender] = newBalance;
       (bool result,) = msg.sender.call{value: _withdrawAmount}("");
       require(result, "Failed withdraw amount");
       return result;
-
     }
 
     modifier isEnrolled() {
