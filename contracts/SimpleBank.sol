@@ -62,7 +62,7 @@ contract SimpleBank {
     /// @return The balance of the user after the deposit is made
     // This function can receive ether
     // Users should be enrolled before they can make deposits
-    function deposit() public isEnrolled returns (uint) {
+    function deposit() external payable isEnrolled returns (uint) {
       require(msg.value > 0, "Amount to deposit must be > 0");
       emit LogDepositMade(msg.sender, msg.value);
       balances[msg.sender] += msg.value;
