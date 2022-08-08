@@ -84,8 +84,6 @@ contract SimpleBank is ReentrancyGuard {
     function withdraw(uint _withdrawAmount)
       external
       isEnrolled
-      amountIsGreaterZero(_withdrawAmount)
-      hasAmountForWithdraw(_withdrawAmount)
       returns (uint)
     {
       bool result = _withdraw(_withdrawAmount);
@@ -100,7 +98,6 @@ contract SimpleBank is ReentrancyGuard {
     function withdrawAll()
       external
       isEnrolled
-      amountIsGreaterZero(balances[msg.sender])
       returns (bool)
     {
       bool result = _withdraw(balances[msg.sender]);
