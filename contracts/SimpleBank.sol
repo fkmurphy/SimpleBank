@@ -43,7 +43,7 @@ contract SimpleBank {
 
     /// @notice Get balance
     /// @return The balance of the user
-    function getBalance() external isEnrolled returns(uint){
+    function getBalance() external view isEnrolled returns(uint){
       return balances[msg.sender];
     }
 
