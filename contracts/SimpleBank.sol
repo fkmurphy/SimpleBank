@@ -62,8 +62,13 @@ contract SimpleBank {
     /// @return The balance of the user after the deposit is made
     // This function can receive ether
     // Users should be enrolled before they can make deposits
-    function deposit() external payable isEnrolled returns (uint) {
-      require(msg.value > 0, "Amount to deposit must be > 0");
+    function deposit()
+      external
+      payable
+      isEnrolled
+      amountIsGreaterZero(msg.value)
+      returns (uint)
+    {
       emit LogDepositMade(msg.sender, msg.value);
       balances[msg.sender] += msg.value;
 
@@ -77,6 +82,7 @@ contract SimpleBank {
     function withdraw(uint _withdrawAmount)
       external
       isEnrolled
+      amountIsGreaterZero(_withdrawAmount)
       hasAmountForWithdraw(_withdrawAmount)
       returns (uint)
     {
@@ -92,6 +98,7 @@ contract SimpleBank {
     function withdrawAll()
       external
       isEnrolled
+      amountIsGreaterZero(balances[msg.sender])
       returns (bool)
     {
       bool result = _withdraw(balances[msg.sender]);
@@ -103,6 +110,7 @@ contract SimpleBank {
       private
       isEnrolled
       hasAmountForWithdraw(_withdrawAmount)
+      amountIsGreaterZero(_withdrawAmount)
       returns(bool)
     {
       uint newBalance = balances[msg.sender] - _withdrawAmount;
@@ -119,8 +127,12 @@ contract SimpleBank {
     }
 
     modifier hasAmountForWithdraw(uint _withdrawAmount) {
-      require(_withdrawAmount > 0, "Amount must be > 0");
       require(balances[msg.sender] >= _withdrawAmount, "Insufficient balance");
+      _;
+    }
+    
+    modifier amountIsGreaterZero(uint _withdrawAmount) {
+      require(_withdrawAmount > 0, "Amount must be > 0");
       _;
     }
 
