@@ -109,8 +109,8 @@ contract SimpleBank is ReentrancyGuard {
       private
       nonReentrant
       isEnrolled
-      hasAmountForWithdraw(_withdrawAmount)
       amountIsGreaterZero(_withdrawAmount)
+      hasAmountForWithdraw(_withdrawAmount)
       returns(bool)
     {
       uint newBalance = balances[msg.sender] - _withdrawAmount;
