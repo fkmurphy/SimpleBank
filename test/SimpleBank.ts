@@ -2,6 +2,7 @@ import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { SimpleBank } from "../typechain-types"
 
 describe("SimpleBank", function () {
   async function deployOneYearLockFixture() {
@@ -53,6 +54,7 @@ describe("SimpleBank", function () {
     });
 
   })
+
   describe("Deposit", function() {
 
     it("Should deposit 50000 to balance and change ether balance", async function () {
@@ -75,4 +77,55 @@ describe("SimpleBank", function () {
     });
   })
 
+  describe("Withdraw", function() {
+
+    it("Should withdraw 25000 and balance reduce to 25000 in contract, and withdrawAll, balance reduce to 0", async function () {
+      const { simpleBank, testAccountOne} = await loadFixture(deployOneYearLockFixture);
+      await simpleBank.connect(testAccountOne).enroll()
+      const amountToDeposit = 50000
+      await simpleBank.connect(testAccountOne).deposit({from: testAccountOne.address, value: amountToDeposit})
+
+      expect(await simpleBank.connect(testAccountOne).withdraw(25000))
+        .to.emit(simpleBank, "LogWithdraw")
+        .to.changeEtherBalance(testAccountOne, 25000)
+
+      expect(await simpleBank.connect(testAccountOne).getBalance())
+        .to.equal(25000)
+
+      expect(await simpleBank.connect(testAccountOne).withdrawAll())
+        .to.emit(simpleBank, "LogWithdraw")
+        .to.changeEtherBalance(testAccountOne, 25000)
+
+      expect(await simpleBank.connect(testAccountOne).getBalance())
+        .to.equal(0)
+
+    });
+
+    it("Should withdraw 25000 and require enrollment error", async function () {
+      const { simpleBank, testAccountOne} = await loadFixture(deployOneYearLockFixture);
+
+      await expect(simpleBank.connect(testAccountOne).withdraw(25000))
+        .to.revertedWith("need enrollment")
+
+    });
+
+    it("Should withdrawAll and require enrollment error", async function () {
+      const { simpleBank, testAccountOne} = await loadFixture(deployOneYearLockFixture);
+
+      await expect(simpleBank.connect(testAccountOne).withdrawAll())
+        .to.revertedWith("need enrollment")
+
+    });
+
+    it("Should withdraw 50001 but not has balance", async function () {
+      const { simpleBank, testAccountOne} = await loadFixture(deployOneYearLockFixture);
+      await simpleBank.connect(testAccountOne).enroll()
+      const amountToDeposit = 50000
+      await simpleBank.connect(testAccountOne).deposit({from: testAccountOne.address, value: amountToDeposit})
+
+      await expect(simpleBank.connect(testAccountOne).withdraw(50001))
+        .to.revertedWith("Insufficient balance")
+
+    });
+  })
 });
