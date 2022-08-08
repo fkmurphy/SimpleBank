@@ -58,7 +58,6 @@ contract SimpleBank {
     function enroll() public returns (bool) {
         require(!enrolled[msg.sender], "User already enrolled");
         emit LogEnrolled(msg.sender);
-        //delete balances[msg.sender];
         enrolled[msg.sender] = true;
     }
 
